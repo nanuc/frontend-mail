@@ -14,14 +14,14 @@ class FrontendMailTransport extends Transport
     {
         $this->beforeSendPerformed($message);
 
-        $mails = cache()->get($this->getCacheKey()) ?? [];
+        $mails = cache()->get($this->getCacheKey($message)) ?? [];
         $mails[] = [
             'from' => $this->formatArray($message->getFrom()),
             'to' => $this->formatArray($message->getTo()),
             'subject' => $message->getSubject(),
             'body' => $message->getBody(),
         ];
-        cache()->put($this->getCacheKey(), $mails);
+        cache()->put($this->getCacheKey($message), $mails);
 
         $this->sendPerformed($message);
     }
@@ -31,8 +31,9 @@ class FrontendMailTransport extends Transport
         return collect($array)->map(fn($name, $email) => compact('name', 'email'))->values()->toArray();
     }
 
-    private function getCacheKey()
+    private function getCacheKey($message)
     {
-        return 'frontend-mail-' . session()->get('frontend-mail-id');
+        $key = $message->getHeaders()->get('Frontend-Mail-Id')?->getValue() ?? session()->get('frontend-mail-id');
+        return 'frontend-mail-' . $key;
     }
 }

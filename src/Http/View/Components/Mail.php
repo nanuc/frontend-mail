@@ -23,7 +23,9 @@ class Mail extends Component
      */
     public function render()
     {
-        session()->put('frontend-mail-id', \Illuminate\Support\Str::random());
+        if(!session()->has('frontend-mail-id')) {
+            session()->put('frontend-mail-id', \Illuminate\Support\Str::random());
+        }
         return view('frontend-mail::components.frontend-mail');
     }
 }

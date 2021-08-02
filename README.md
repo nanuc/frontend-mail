@@ -28,3 +28,21 @@ Set your mailer to `frontend` in `.env`:
 ```
 MAIL_MAILER=frontend
 ```
+
+## Session ID modification
+You can change the ID that is used for the frontend in the Mailable. This is useful if you create mails outside of an user session.
+
+```
+class SomeMail extends Mailable
+{
+    public function build()
+    {
+        return $this->view('mails.some-mail')
+            ->withSwiftMessage(function ($message){
+                $message->getHeaders()->addTextHeader(
+                    'Frontend-Mail-Id', $this->user->id
+                );
+            });
+    }
+}
+```
